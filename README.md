@@ -12,7 +12,7 @@ This project is probably for you.
 
 We are defining a C++ transpiler that can go back and forth between C++ 14-16 and this new (unnamed) intermediary language. I have a few goals to make C++ less error prone, more readable, and to encourage best practices.
 
-The best thing is, you don't have to tell your coworkers you are using this transpiler at all. It will be super minimalistic. Simply add `*.tcpp` and `*.thpp` to your `.gitignore` and then you can invoke this transpiler to get code back from your peers in this format and upon invoking this transpiler prior to git commit you will receive `*.cpp` and `*.hpp` files with minimal changes to them as if you had edited the file directly yourself. No one needs to know, and thus no need to ask permission from your boss or peers to rage against their machine.
+The best thing is, you don't have to tell your coworkers you are using this transpiler at all. It will be super minimalistic. Simply add `*.rcpp` and `*.rhpp` to your `.gitignore` and then you can invoke this transpiler to get code back from your peers in this format and upon invoking this transpiler prior to git commit you will receive `*.cpp` and `*.hpp` files with minimal changes to them as if you had edited the file directly yourself. No one needs to know, and thus no need to ask permission from your boss or peers to rage against their machine.
 
 The goals of this new language (so far) are as follows:
 
