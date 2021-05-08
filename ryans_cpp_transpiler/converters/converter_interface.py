@@ -1,4 +1,6 @@
-from typing import List, Tuple
+from typing import List, Optional, Tuple
+
+from iregex import Regex
 
 from ryans_cpp_transpiler.utils.types import (
     ConvertedPartialTxt,
@@ -11,6 +13,8 @@ class Converter:
     """
     A class used to convert to and from cpp by defining one atomic rule.
     """
+
+    context: Optional[Regex]
 
     @staticmethod
     def from_cpp(

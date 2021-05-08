@@ -1,4 +1,6 @@
-from typing import List
+from typing import List, Optional
+
+from iregex import Regex
 
 from ryans_cpp_transpiler.utils.types import (
     FormattedSlice2,
@@ -17,6 +19,8 @@ class Complaint(str):
 
 class Complainer:
     """Shows errors when it finds specific strings."""
+
+    context: Optional[Regex]
 
     @staticmethod
     def _complain(sl: OriginalSlice2, text: OriginalTxt) -> Complaint:

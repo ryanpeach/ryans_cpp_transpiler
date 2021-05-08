@@ -42,8 +42,16 @@ Note: The point of calling a non-smart pointer `dumb` is twofold:
 ## In General
 
   - [ ]  Create a cpp header file that can be imported for all the header preprocessing.
+  - [ ]  Write Utility
+  - [ ]  Add regex context to converter and complainer classes to speed up processing.
 
 ## Complainers
+
+### CPP
+
+  - [ ]  Don't allow `use namespace std`
+
+### RCPP
 
   - [ ]  Require import of the header file `#include <rcpp>`
   - [ ]  Don't allow `use namespace std`
@@ -55,5 +63,33 @@ Note: The point of calling a non-smart pointer `dumb` is twofold:
 
 ## Converters
 
+### CPP to RCPP
+
+  - [ ]  Add the header to the code
+  - [ ]  Add `mut` to any non-const variables
+  - [ ]  Convert any `${NAME}\*` to `dumb($NAME)`
+  - [ ]  Convert any `${NAME}&` to `ref($NAME)`
+  - [ ]  Convert any `*${NAME}` to `deref($NAME)`
+  - [ ]  Convert any `&${NAME}` to `addr($NAME)`
+  - [ ]  Convert any `std::shared_ptr<$TYPE>` to `shared($TYPE)`
+  - [ ]  Convert any `std::weak_ptr<$TYPE>` to `weak($TYPE)`
+  - [ ]  Convert any `std::unique_ptr<$TYPE>` to `unique($TYPE)`
+  - [ ]  Convert any `new ${ANY}` to `make_dumb($ANY)`
+  - [ ]  Convert any `std::make_shared($ANY)>` to `make_shared($ANY)`
+  - [ ]  Convert any `std::make_unique($TYPE)` to `make_unique($TYPE)`
+  - [ ]  Convert any `${NAME}&&` to `rref($NAME)` or `univref($NAME)` appropriately based on lvalue or rvalue reference (HARD to automate)
+
+### RCPP to CPP
+
   - [ ]  Remove the header from the code
-  - [ ]  Run the preprocessor defines
+  - [ ]  Convert any `dumb($NAME)` to `${NAME}\*`
+  - [ ]  Convert any `ref($NAME)` to `${NAME}&`
+  - [ ]  Convert any `rref($NAME)` or `univref($NAME)` to `${NAME}&&`
+  - [ ]  Convert any `deref($NAME)` to `*${NAME}`
+  - [ ]  Convert any `addr($NAME)` to `&${NAME}`
+  - [ ]  Convert any `shared($TYPE)` to `std::shared_ptr<$TYPE>`
+  - [ ]  Convert any `weak($TYPE)` to `std::weak_ptr<$TYPE>`
+  - [ ]  Convert any `unique($TYPE)` to `std::unique_ptr<$TYPE>`
+  - [ ]  Convert any `make_dumb($ANY)` to `new ${ANY}`
+  - [ ]  Convert any `make_shared($ANY)` to `std::make_shared($ANY)>`
+  - [ ]  Convert any `make_unique($TYPE)`  to `std::make_unique($TYPE)`
