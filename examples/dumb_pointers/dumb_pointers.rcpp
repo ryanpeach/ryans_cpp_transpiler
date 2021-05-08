@@ -1,0 +1,47 @@
+// RCPP Header Definitions
+// TODO: Replace with include <rcpp>
+// These are defined into existence but do nothing
+#define mut
+
+// These are simple renames
+#define dumb(X) X*
+#define ref(X) X&
+#define rref(X) X&&
+#define univref(X) X&&
+#define deref(X) *X
+#define addr(X) &X
+#define make_dumb(X) new X
+#define shared(X) std::shared_ptr<X>
+#define make_shared(X) std::make_shared(X)
+#define weak(X) std::weak_ptr<X>
+#define unique(X) std::unique_ptr<X>
+#define make_unique(X) std::make_unique(X)
+// END RCPP Header Definitions
+
+// REF: https://www.tutorialspoint.com/cplusplus/cpp_pointers.htm
+#include <iostream>
+
+int foo(const ref(int) asdf) {
+   return asdf;
+}
+
+int main () {
+   const int var1 = 5;
+   mut int var2 = foo(5);    // actual variable declaration.
+   mut dumb(mut int) ip;     // pointer variable
+
+   ip = addr(var2);          // store address of var in pointer variable
+
+   std::cout << "Value of var variable: ";
+   std::cout << var1 << std::endl;
+
+   // print the address stored in ip pointer variable
+   std::cout << "Address stored in ip variable: ";
+   std::cout << ip << std::endl;
+
+   // access the value at the address available in pointer
+   std::cout << "Value of *ip variable: ";
+   std::cout << deref(ip) << std::endl;
+
+   return 0;
+}
