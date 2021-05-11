@@ -3,8 +3,9 @@ from typing import List, Optional
 from iregex import Regex
 
 from ryans_cpp_transpiler.utils.types import (
+    FormattedPartialSlice2,
+    FormattedPartialTxt,
     FormattedSlice2,
-    FormattedTxt,
     OriginalIdx,
     OriginalSlice2,
     OriginalTxt,
@@ -27,17 +28,24 @@ class Complainer:
         """Returns a string to printout describing the complaint."""
         raise NotImplementedError("Needs to be implemented.")
 
-    def find(self: "Complainer", text: FormattedTxt) -> List[FormattedSlice2]:
+    def find(self, text: FormattedPartialTxt) -> List[FormattedPartialSlice2]:
         """Returns a list of slices where the complaint is found."""
         raise NotImplementedError("This needs to be overwritten.")
 
     def check(
-        self: "Complainer", text: OriginalTxt, converter: List[OriginalIdx]
+        self,
+        original_text: OriginalTxt,
+        context_range: FormattedSlice2,
+        converter: List[OriginalIdx],
     ) -> List[Complaint]:
         """Checks a piece of text and returns a complaint."""
-        formatted_slices = self.find(text)
+        start, _ = context_range
+        formatted_slices = self.find(
+            FormattedPartialTxt(original_text[context_range[0] : context_range[1]])
+        )
         out: List[Complaint] = []
         for sl in formatted_slices:
-            original_slice = (converter[sl[0]], converter[sl[1]])
-            out.append(Complainer._complain(sl=original_slice, text=text))
+            a, b = sl
+            original_slice = (converter[a + start], converter[b + start])
+            out.append(Complainer._complain(sl=original_slice, text=original_text))
         return out

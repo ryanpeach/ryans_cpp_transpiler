@@ -1,8 +1,8 @@
 import os
 from typing import List, Tuple
 
-from ryans_cpp_transpiler.utils.exceptions import OverlapException
-from ryans_cpp_transpiler.utils.types import (
+from src.ryans_cpp_transpiler.utils.exceptions import OverlapException
+from src.ryans_cpp_transpiler.utils.types import (
     ConvertedPartialTxt,
     FormattedTxt,
     OriginalIdx,

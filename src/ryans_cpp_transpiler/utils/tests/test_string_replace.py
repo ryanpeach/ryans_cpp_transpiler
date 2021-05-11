@@ -1,7 +1,7 @@
 import pytest
 
-from ryans_cpp_transpiler.utils.exceptions import OverlapException
-from ryans_cpp_transpiler.utils.string_replace import (
+from src.ryans_cpp_transpiler.utils.exceptions import OverlapException
+from src.ryans_cpp_transpiler.utils.string_replace import (
     batch_string_replace,
     make_inline_record_index,
 )

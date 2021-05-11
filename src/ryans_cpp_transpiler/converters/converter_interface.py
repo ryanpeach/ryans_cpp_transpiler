@@ -2,10 +2,10 @@ from typing import List, Optional, Tuple
 
 from iregex import Regex
 
-from ryans_cpp_transpiler.utils.types import (
+from src.ryans_cpp_transpiler.utils.types import (
     ConvertedPartialTxt,
-    FormattedSlice2,
-    FormattedTxt,
+    FormattedPartialSlice2,
+    FormattedPartialTxt,
 )
 
 
@@ -18,8 +18,8 @@ class Converter:
 
     @staticmethod
     def from_cpp(
-        text: FormattedTxt,
-    ) -> List[Tuple[FormattedSlice2, ConvertedPartialTxt]]:
+        text: FormattedPartialTxt,
+    ) -> List[Tuple[FormattedPartialSlice2, ConvertedPartialTxt]]:
         """
         Converts text from cpp/hpp to rcpp/rhpp with input text that has no newlines and is
         whitespace agnostic.
@@ -27,7 +27,9 @@ class Converter:
         raise NotImplementedError("Needs to be overwritten.")
 
     @staticmethod
-    def to_cpp(text: FormattedTxt) -> List[Tuple[FormattedSlice2, ConvertedPartialTxt]]:
+    def to_cpp(
+        text: FormattedPartialTxt,
+    ) -> List[Tuple[FormattedPartialSlice2, ConvertedPartialTxt]]:
         """
         Converts text from rcpp/rhpp to cpp/hpp with input text that has no newlines and is
         whitespace agnostic.

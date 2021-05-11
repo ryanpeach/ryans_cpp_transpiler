@@ -1,4 +1,5 @@
-from py_idiomatic_regex import ALPHA, ALPHA_NUMERIC, Regex
+from iregex import Regex
+from iregex.consts import ALPHA, ALPHA_NUMERIC
 
 # A valid variable, type, class, or function name
 NAME = (

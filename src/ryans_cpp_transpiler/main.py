@@ -1,16 +1,20 @@
 import argparse
+from collections import defaultdict
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import DefaultDict, List, Optional, Set, Tuple
 
-from ryans_cpp_transpiler.complainers import ALL_COMPLAINERS, Complaint
-from ryans_cpp_transpiler.converters import ALL_CONVERTERS
+from iregex import Regex
+
+from ryans_cpp_transpiler.complainers import ALL_COMPLAINERS, Complainer, Complaint
+from ryans_cpp_transpiler.converters import ALL_CONVERTERS, Converter
 from ryans_cpp_transpiler.utils.string_replace import (
     batch_string_replace,
     make_inline_record_index,
 )
 from ryans_cpp_transpiler.utils.types import (
     ConvertedPartialTxt,
-    FormattedSlice2,
+    FormattedPartialSlice2,
+    FormattedPartialTxt,
     OriginalSlice2,
     OriginalTxt,
 )
@@ -58,18 +62,42 @@ def _from_cpp(file: Path) -> None:
 
     # Read the file
     with file.open("r") as f:
-        file_txt: OriginalTxt = f.read()
+        file_txt: OriginalTxt = OriginalTxt(f.read())
         file_idxs, file_squished = make_inline_record_index(file_txt)
 
-    # Run all Converters
-    replacements: List[Tuple[OriginalSlice2, ConvertedPartialTxt]] = []
+    # ====== Run all Converters ======
+    # First we will get all contexts of all the converters
+    contexts: Set[Regex] = set()
+    converters_by_context: DefaultDict[Optional[Regex], List[Converter]] = defaultdict(
+        list
+    )
     for converter in ALL_CONVERTERS:
-        replacements_new: List[
-            Tuple[FormattedSlice2, ConvertedPartialTxt]
-        ] = converter.from_cpp(file_squished)
-        replacements += [
-            ((file_idxs[sl[0]], file_idxs[sl[1]]), t) for sl, t in replacements_new
-        ]
+        converters_by_context[converter.context].append(converter)
+        if converter.context is not None:
+            contexts.add(converter.context)
+
+    # This will get all replacements via the converters
+    replacements: List[Tuple[OriginalSlice2, ConvertedPartialTxt]] = []
+    for context, converters in converters_by_context.items():
+        if context is None:
+            context = Regex().anything()
+        for match in context.compile().finditer(file_squished):
+            for converter in converters:
+                replacements_new: List[
+                    Tuple[FormattedPartialSlice2, ConvertedPartialTxt]
+                ] = converter.from_cpp(
+                    FormattedPartialTxt(file_squished[match.start() : match.end()])
+                )
+                replacements += [
+                    (
+                        (
+                            file_idxs[sl[0] + match.start()],
+                            file_idxs[sl[1] + match.start()],
+                        ),
+                        t,
+                    )
+                    for sl, t in replacements_new
+                ]
 
     # Make the replacements
     new_txt = batch_string_replace(file_txt, replacements=replacements)
@@ -118,23 +146,68 @@ def _to_cpp(file: Path) -> None:
 
     # Read the file
     with file.open("r") as f:
-        file_txt: OriginalTxt = f.read()
+        file_txt: OriginalTxt = OriginalTxt(f.read())
         file_idxs, file_squished = make_inline_record_index(file_txt)
 
-    # Run all Complainers
-    complaints: List[Complaint] = []
+    # ====== Run all Complainers ======
+    # First we will get all contexts of all the converters
+    complainer_contexts: Set[Regex] = set()
+    complainers_by_context: DefaultDict[
+        Optional[Regex], List[Complainer]
+    ] = defaultdict(list)
     for complainer in ALL_COMPLAINERS:
-        complaints += complainer.check(file_squished, converter=file_idxs)
+        complainers_by_context[complainer.context].append(complainer)
+        if complainer.context is not None:
+            complainer_contexts.add(complainer.context)
 
-    # Run all Converters
-    replacements: List[Tuple[OriginalSlice2, ConvertedPartialTxt]] = []
+    # This will get all replacements via the converters
+    complaints: List[Complaint] = []
+    for context, complainers in complainers_by_context.items():
+        if context is None:
+            context = Regex().anything()
+        for match in context.compile().finditer(file_squished):
+            for complainer in complainers:
+                complaints += complainer.check(
+                    file_squished[match.start() : match.end()],
+                    converter=file_idxs[match.start() : match.end()],
+                )
+
+    if complaints:
+        exit(1)
+
+    # ====== Run all Converters ======
+    # First we will get all contexts of all the converters
+    converter_contexts: Set[Regex] = set()
+    converters_by_context: DefaultDict[Optional[Regex], List[Converter]] = defaultdict(
+        list
+    )
     for converter in ALL_CONVERTERS:
-        replacements_new: List[
-            Tuple[FormattedSlice2, ConvertedPartialTxt]
-        ] = converter.to_cpp(file_squished)
-        replacements += [
-            ((file_idxs[sl[0]], file_idxs[sl[1]]), t) for sl, t in replacements_new
-        ]
+        converters_by_context[converter.context].append(converter)
+        if converter.context is not None:
+            converter_contexts.add(converter.context)
+
+    # This will get all replacements via the converters
+    replacements: List[Tuple[OriginalSlice2, ConvertedPartialTxt]] = []
+    for context, converters in converters_by_context.items():
+        if context is None:
+            context = Regex().anything()
+        for match in context.compile().finditer(file_squished):
+            for converter in converters:
+                replacements_new: List[
+                    Tuple[FormattedPartialSlice2, ConvertedPartialTxt]
+                ] = converter.to_cpp(
+                    FormattedPartialTxt(file_squished[match.start() : match.end()])
+                )
+                replacements += [
+                    (
+                        (
+                            file_idxs[sl[0] + match.start()],
+                            file_idxs[sl[1] + match.start()],
+                        ),
+                        t,
+                    )
+                    for sl, t in replacements_new
+                ]
 
     # Make the replacements
     new_txt = batch_string_replace(file_txt, replacements=replacements)
