@@ -98,8 +98,6 @@ def _handle_converters(
     # This will get all replacements via the converters
     replacements: List[Tuple[OriginalSlice, ConvertedPartialTxt]] = []
     for context, converters in converters_by_context.items():
-        if context is None:
-            context = Regex().anything()
         for match in context.compile().finditer(file_txt):
             for converter in converters:
                 # Pick the converter function based on the boolean variable
@@ -119,7 +117,8 @@ def _handle_converters(
                             ),
                             _partial_idx_to_original(
                                 end, start_idx=OriginalIdx(match.start())
-                            ),
+                            )
+                            + 1,
                         ),
                         t,
                     )
@@ -142,7 +141,8 @@ def _handle_complaints(file_txt: OriginalTxt) -> List[Complaint]:
         for match in context.compile().finditer(file_txt):
             for complainer in complainers:
                 complaints += complainer.check_rcpp(
-                    original_txt=file_txt, context_range=(match.start(), match.end())
+                    original_txt=file_txt,
+                    context_range=(match.start(), match.end() + 1),
                 )
 
     return complaints

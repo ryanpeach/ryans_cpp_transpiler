@@ -1,10 +1,7 @@
 import pytest
 
 from src.ryans_cpp_transpiler.utils.exceptions import OverlapException
-from src.ryans_cpp_transpiler.utils.string_replace import (
-    batch_string_replace,
-    make_inline_record_index,
-)
+from src.ryans_cpp_transpiler.utils.string_replace import batch_string_replace
 
 
 def test_batch_string_replace_overlap() -> None:
@@ -61,39 +58,3 @@ def test_batch_string_replace_bigger() -> None:
         text="asdfghjkl;", replacements=[((0, 2), "xxx"), ((3, 5), "xx")]
     )
     assert out == "xxxdxxhjkl;"
-
-
-def test_make_inline_record_index_1() -> None:
-    """One basic test of make_inline_record."""
-    out_idxs, out_str = make_inline_record_index(
-        "asdf ; // hdhs\ndfsdfs;\na  b c = 3; "
-    )
-    assert out_str == "asdf ; dfsdfs;a  b c = 3; "
-    assert out_idxs == [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        15,
-        16,
-        17,
-        18,
-        19,
-        20,
-        21,
-        23,
-        24,
-        25,
-        26,
-        27,
-        28,
-        29,
-        30,
-        31,
-        32,
-        33,
-        34,
-    ]

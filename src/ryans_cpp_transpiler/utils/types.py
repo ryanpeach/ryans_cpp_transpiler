@@ -8,13 +8,10 @@ OriginalIdx = NewType("OriginalIdx", int)
 #: Represents an index in a partial section of the original string.
 PartialIdx = NewType("PartialIdx", int)
 
-#: Represents a slice with an inclusive beginning and an exclusive ending index.
-Slice = Tuple[int, int]
-
-#: Represents a slice in the original index.
+#: Represents a slice in the original index. Uses inclusive start index and exclusive end index.
 OriginalSlice = Tuple[OriginalIdx, OriginalIdx]
 
-#: Represents a slice in the partial index.
+#: Represents a slice in the partial index. Uses inclusive start index and exclusive end index.
 PartialSlice = Tuple[PartialIdx, PartialIdx]
 
 #: Represents the original text.

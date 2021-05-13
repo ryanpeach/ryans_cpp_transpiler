@@ -1,6 +1,4 @@
-from typing import List, Optional
-
-from iregex import Regex
+from typing import List
 
 from ryans_cpp_transpiler.utils.types import (
     Complaint,
@@ -13,10 +11,9 @@ from ryans_cpp_transpiler.utils.types import (
 class Complainer(HasContext):
     """Shows errors when it finds specific strings."""
 
-    context: Optional[Regex]
-
+    @staticmethod
     def check_rcpp(
-        self, original_txt: OriginalTxt, context_range: OriginalSlice
+        original_txt: OriginalTxt, context_range: OriginalSlice
     ) -> List[Complaint]:
         """Checks a piece of text and returns a complaint."""
         raise NotImplementedError("This needs to be overwritten.")
